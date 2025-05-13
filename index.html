@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealthSync - Health-Tech Platform</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React CDNs -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.6/babel.min.js"></script>
+  <!-- Chart.js CDN for Data Visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Roboto Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; }
+    .card { transition: transform 0.2s; }
+    .card:hover { transform: scale(1.02); }
+    .fade-in { animation: fadeIn 0.5s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Sample Data
+    const samplePatientData = [
+      { id: 1, name: "Raj Verma", age: 45, bp: "120/80 mmHg", heartRate: 75, diagnosis: "Normal", xray: "xray1.pdf", city: "Delhi" },
+      { id: 2, name: "Priya S.", age: 30, bp: "130/85 mmHg", heartRate: 84, diagnosis: "Hypertension", xray: "xray2.pdf", city: "Mumbai" },
+    ];
+
+    // Landing Page Component
+    function LandingPage({ setRole }) {
+      return (
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="text-center space-y-6 fade-in">
+            <h1 className="text-4xl font-bold text-teal-500">HealthSync</h1>
+            <p className="text-lg text-gray-600">Your trusted platform for medical checkups and consultations</p>
+            <div className="space-x-4">
+              <button
+                onClick={() => setRole("host")}
+                className="px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition transform hover:scale-105"
+              >
+                Host Login
+              </button>
+              <button
+                onClick={() => setRole("clinic")}
+                className="px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition transform hover:scale-105"
+              >
+                Clinic Login
+              </button>
+              <button
+                onClick={() => setRole("patient")}
+                className="px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition transform hover:scale-105"
+              >
+                Patient Login
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Navigation Bar Component
+    function Navbar({ role, setRole }) {
+      const [isOpen, setIsOpen] = useState(false);
+      const menuItems = {
+        host: ["Clinics", "Patients", "Logout"],
+        clinic: ["Patients", "Reports", "Logout"],
+        patient: ["My Reports", "Video Call", "Profile", "Logout"],
+      };
+
+      const handleLogout = () => {
+        if (window.confirm("Are you sure you want to log out?")) {
+          setRole(null);
+        }
+      };
+
+      return (
+        <nav className="bg-white shadow p-4 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <span className="text-teal-500 font-bold text-xl">HealthSync</span>
+          </div>
+          <div className="hidden md:flex space-x-4">
+            {menuItems[role].map((item) => (
+              <button
+                key={item}
+                onClick={() => item === "Logout" && handleLogout()}
+                className="text-gray-700 hover:text-teal-500"
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+          <button
+            className="md:hidden text-teal-500"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            ☰
+          </button>
+          {isOpen && (
+            <div className="absolute top-16 left-0 w-full bg-white shadow-md md:hidden">
+              <ul className="flex flex-col space-y-2 p-4">
+                {menuItems[role].map((item) => (
+                  <li key={item}>
+                    <button
+                      onClick={() => item === "Logout" && handleLogout()}
+                      className="w-full text-left text-gray-700 hover:text-teal-500"
+                    >
+                      {item}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </nav>
+      );
+    }
+
+    // Host Dashboard
+    function HostDashboard() {
+      return (
+        <div className="p-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Welcome, Admin</h2>
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg shadow p-4 card">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">City Overview</h3>
+              <div className="space-y-4">
+                <div className="bg-teal-50 p-4 rounded-lg">
+                  <p className="font-medium text-gray-800">Delhi</p>
+                  <p className="text-gray-600">125 patients</p>
+                  <p className="text-sm text-gray-500">Last update: 5 minutes ago</p>
+                </div>
+                <div className="bg-teal-50 p-4 rounded-lg">
+                  <p className="font-medium text-gray-800">Mumbai</p>
+                  <p className="text-gray-600">96 patients</p>
+                  <p className="text-sm text-gray-500">Last update: 2 minutes ago</p>
+                </div>
+                <div className="bg-teal-50 p-4 rounded-lg">
+                  <p className="font-medium text-gray-800">Chennai</p>
+                  <p className="text-gray-600">81 patients</p>
+                  <p className="text-sm text-gray-500">Last update: 1 hour ago</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4 card">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Reports Summary</h3>
+              <button className="w-full bg-teal-500 text-white py-2 rounded-lg hover:bg-teal-600 transition transform hover:scale-105">
+                Download All Reports
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Clinic Dashboard
+    function ClinicDashboard() {
+      const handleUpload = () => {
+        alert("Data uploaded successfully! (Placeholder)");
+      };
+
+      return (
+        <div className="p-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Welcome, Dr. Sharma</h2>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">Delhi Clinic</h3>
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg shadow p-4 card">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Patient List</h3>
+              <div className="space-y-4">
+                {samplePatientData.map((patient) => (
+                  <div key={patient.id} className="bg-teal-50 p-4 rounded-lg">
+                    <p className="font-medium text-gray-800">{patient.name}</p>
+                    <p className="text-gray-600">Age {patient.age}</p>
+                    <p className="text-gray-600">{patient.bp}</p>
+                    <p className="text-gray-600">{patient.heartRate} bpm</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4 card">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Upload New Report</h3>
+              <div className="space-y-4">
+                <input type="text" placeholder="Patient Name" className="w-full p-2 border rounded" />
+                <input type="number" placeholder="Heart Rate (bpm)" className="w-full p-2 border rounded" />
+                <input type="text" placeholder="Blood Pressure (mmHg)" className="w-full p-2 border rounded" />
+                <textarea placeholder="Diagnosis" className="w-full p-2 border rounded"></textarea>
+                <input type="file" accept=".pdf" className="w-full p-2" />
+                <button
+                  onClick={handleUpload}
+                  className="w-full bg-teal-500 text-white py-2 rounded-lg hover:bg-teal-600 transition transform hover:scale-105"
+                >
+                  Upload Report
+                </button>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4 card">
+              <button className="w-full bg-teal-500 text-white py-2 rounded-lg hover:bg-teal-600 transition transform hover:scale-105">
+                Start Video Consult
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Patient Dashboard
+    function PatientDashboard() {
+      useEffect(() => {
+        const ctx = document.getElementById("healthChart").getContext("2d");
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+            datasets: [
+              {
+                label: "Heart Rate",
+                data: [72, 74, 75, 73, 75],
+                borderColor: "#26C6DA",
+                fill: false,
+              },
+              {
+                label: "Blood Pressure (Systolic)",
+                data: [120, 122, 120, 118, 120],
+                borderColor: "#4DD0E1",
+                fill: false,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: false },
+            },
+          },
+        });
+      }, []);
+
+      return (
+        <div className="p-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Hello, Raj Verma!</h2>
+          <p className="text-gray-600 mb-4">Last Visit: May 10, 2025</p>
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg shadow p-4 card">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Health Summary</h3>
+              <canvas id="healthChart"></canvas>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4 card">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">My Reports</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-teal-50 p-4 rounded-lg">
+                  <p className="font-medium text-gray-800">X-Ray Report.pdf</p>
+                  <a href="#" className="text-teal-500 hover:underline">View</a>
+                </div>
+                <div className="bg-teal-50 p-4 rounded-lg">
+                  <p className="font-medium text-gray-800">Prescription_May10.pdf</p>
+                  <a href="#" className="text-teal-500 hover:underline">View</a>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4 card">
+              <button className="w-full bg-teal-500 text-white py-2 rounded-lg hover:bg-teal-600 transition transform hover:scale-105">
+                Start Video Consult
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Main App Component
+    function App() {
+      const [role, setRole] = useState(null);
+
+      return (
+        <div className="min-h-screen bg-white">
+          {!role ? (
+            <LandingPage setRole={setRole} />
+          ) : (
+            <div>
+              <Navbar role={role} setRole={setRole} />
+              {role === "host" && <HostDashboard />}
+              {role === "clinic" && <ClinicDashboard />}
+              {role === "patient" && <PatientDashboard />}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Render App
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+</html>
